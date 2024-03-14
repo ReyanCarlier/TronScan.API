@@ -2,16 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace TronScan.API.Classes;
 
-public class ProposalTypeApprovals
-{
-    [JsonPropertyName("candidate")]
-    public List<Witness> Candidate { get; set; } = [];
-    [JsonPropertyName("partner")]
-    public List<Witness> Partner { get; set; } = [];
-    [JsonPropertyName("sr")]
-    public List<Witness> Sr { get; set; } = [];
-}
-
 public class Proposal
 {
     [JsonPropertyName("proposalId")]
@@ -34,4 +24,12 @@ public class Proposal
     public List<Approval> Approvals { get; set; } = [];
     [JsonPropertyName("veto")]
     public bool Veto { get; set; } = false;
+    [JsonPropertyName("state")]
+    public string State { get; set; } = "";
+    [JsonPropertyName("totalVotes")]
+    public long TotalVotes { get; set; } = 0;
+    [JsonPropertyName("validVotes")]
+    public long ValidVotes { get; set; } = 0;
+    [JsonPropertyName("createSelf")]
+    public bool CreateSelf { get; set; } = false;
 }

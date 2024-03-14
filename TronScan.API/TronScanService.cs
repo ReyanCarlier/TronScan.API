@@ -253,6 +253,25 @@ public class TronScanService : ITronScanService
         }
     }
     
+    /// <summary>
+    /// Returns a list of votes for the account.
+    /// </summary>
+    /// <param name="address"></param>
+    /// <returns></returns>
+    public async Task<VoteList?> GetAccountVoteListAsync(string address)
+    {
+        try
+        {
+            var stream = await GetRequestAsync($"account/votes?address={address}");
+            return await JsonSerializer.DeserializeAsync<VoteList>(stream);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+    
     #endregion
 
     #region Transactions
@@ -270,6 +289,226 @@ public class TronScanService : ITronScanService
             return null;
         }
     }
+    
+    public async Task<TransactionsList?> GetTransactionsListAsync(string? fromAddress = null, string? toAddress = null, int? limit = 20, long? block = null, int? start = 0, string? sort = "-timestamp", TransactionsList? transactionsList = null, bool? count = true)
+    {
+        while (true)
+        {
+            try
+            {
+                var stream = await GetRequestAsync($"transactions?fromAddress={fromAddress}&toAddress={toAddress}&count={count}&block={block}&limit={limit}&start={start}&sort={sort}");
+                var transactionsListResult = await JsonSerializer.DeserializeAsync<TransactionsList>(stream);
+                if (transactionsList == null)
+                {
+                    transactionsList = transactionsListResult;
+                }
+                else
+                {
+                    if (transactionsListResult != null)
+                    {
+                        transactionsList.Total = transactionsListResult.Total;
+                        transactionsList.Data.AddRange(transactionsListResult.Data);
+                        transactionsList.RangeTotal = transactionsListResult.RangeTotal;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                if (transactionsList != null && transactionsList.Data.Count < limit)
+                {
+                    return transactionsList;
+                }
+                start += limit;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+    }
 
+    #endregion
+    
+    #region Blocks
+
+    /// <summary>
+    /// Returns the blocks info.
+    /// The value sum of start and limit must be less than or equal to 10000.
+    /// In case the total number of blocks is greater than 10000, the function is recursive.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="limit"></param>
+    /// <param name="producer"></param>
+    /// <param name="sort"></param>
+    /// <param name="startTimestamp"></param>
+    /// <param name="endTimestamp"></param>
+    /// <returns></returns>
+    public async Task<BlockList?> GetBlockListAsync(int? start = 0, int? limit = 10, string? producer = null,
+        string? sort = "-number", long? startTimestamp = null, long? endTimestamp = null)
+    {
+        while (true)
+        {
+            try
+            {
+                var stream = await GetRequestAsync($"block?start={start}&limit={limit}&producer={producer}&sort={sort}&startTimestamp={startTimestamp}&endTimestamp={endTimestamp}");
+                var blockListResult = await JsonSerializer.DeserializeAsync<BlockList>(stream);
+                if (blockListResult != null)
+                {
+                    if (blockListResult.Data.Count < limit)
+                    {
+                        return blockListResult;
+                    }
+                    start += limit;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Returns the statistic information of blocks.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<BlockStatistics?> GetBlockStatisticsAsync()
+    {
+        try
+        {
+            var stream = await GetRequestAsync("block/statistics");
+            return await JsonSerializer.DeserializeAsync<BlockStatistics>(stream);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    #endregion
+    
+    #region Witnesses
+
+    /// <summary>
+    /// Returns a list of witnesses.
+    /// </summary>
+    /// <param name="witnessType"></param>
+    /// <returns></returns>
+    public async Task<WitnessList?> GetWitnessListAsync(int? witnessType = 0)
+    {
+        try
+        {
+            var stream = await GetRequestAsync($"pagewitness?witnessType={witnessType}");
+            return await JsonSerializer.DeserializeAsync<WitnessList>(stream);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+    
+    /// <summary>
+    /// Returns a current voting information of a witness.
+    /// </summary>
+    /// <param name="address"></param>
+    /// <returns></returns>
+    public async Task<WitnessVotingDetail?> GetWitnessVotingDetailAsync(string address)
+    {
+        try
+        {
+            var stream = await GetRequestAsync($"vote/witness?address={address}");
+            return await JsonSerializer.DeserializeAsync<WitnessVotingDetail>(stream);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+    
+    #endregion
+    
+    #region Parameters
+    
+    /// <summary>
+    /// Returns the list of parameters in the chain.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<ChainParameters?> GetChainParametersAsync()
+    {
+        try
+        {
+            var stream = await GetRequestAsync("chainparameters");
+            return await JsonSerializer.DeserializeAsync<ChainParameters>(stream);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+    
+    #endregion
+    
+    #region Proposals
+    
+    /// <summary>
+    /// Returns the proposal details of the master chain based on the proposal ID and mark whether the address is the initiator or partipant.
+    /// Note: The maximum value for limit is 200.
+    /// If limit is higher than 200, the function is recursive.
+    /// </summary>
+    /// <param name="limit"></param>
+    /// <param name="start"></param>
+    /// <param name="sort"></param>
+    /// <param name="address"></param>
+    /// <param name="proposalList"></param>
+    /// <returns></returns>
+    public async Task<ProposalList?> GetProposalListAsync(int? limit = 20, int? start = 0, string? sort = "-number", string? address = null, ProposalList? proposalList = null)
+    {
+        while (true)
+        {
+            try
+            {
+                var stream = await GetRequestAsync($"proposal?limit={limit}&start={start}&sort={sort}&address={address}");
+                var proposalListResult = await JsonSerializer.DeserializeAsync<ProposalList>(stream);
+                if (proposalList == null)
+                {
+                    proposalList = proposalListResult;
+                }
+                else
+                {
+                    if (proposalListResult != null)
+                    {
+                        proposalList.Total = proposalListResult.Total;
+                        proposalList.Proposals.AddRange(proposalListResult.Proposals);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                if (proposalList != null && proposalList.Proposals.Count < limit)
+                {
+                    return proposalList;
+                }
+                start += limit;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+    }
+    
     #endregion
 }

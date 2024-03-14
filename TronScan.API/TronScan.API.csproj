@@ -4,6 +4,16 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>TronScan.API</PackageId>
+        <Version>0.0.2</Version>
+        <Authors>Reyan CARLIER</Authors>
+        <PackageTags>TronScan API Blazor</PackageTags>
+        <Title>TronScan.API</Title>
+        <Description>A Blazor client for interacting with the TronScan API. With this client, you can easily access various endpoints provided by the TronScan API to retrieve information related to the Tron blockchain.</Description>
+        <Copyright>Copyright (c) 2024 Reyan Carlier</Copyright>
+        <PackageLicenseUrl>https://github.com/ReyanCarlier/TronScan.API/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/ReyanCarlier/TronScan.API</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
 
