@@ -6,7 +6,7 @@ This repository provides a Blazor client for interacting with the TronScan API. 
 
 Before using this client, ensure that you have the following:
 
-- .NET SDK installed on your machine.
+- .NET 8 SDK installed on your machine.
 - Basic knowledge of Blazor and C# programming.
 
 ### Installation
