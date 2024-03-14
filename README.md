@@ -8,6 +8,7 @@ Before using this client, ensure that you have the following:
 
 - .NET 8 SDK installed on your machine.
 - Basic knowledge of Blazor and C# programming.
+- Create an account on [TronScan](https://tronscan.org/) and [create your API Key](https://tronscan.org/#/myaccount/apiKeys)
 
 ### Installation
 
